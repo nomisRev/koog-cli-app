@@ -2,6 +2,7 @@ package io.github.nomisrev.github
 
 import com.xemantic.ai.tool.schema.meta.Description
 import io.github.nomisrev.tools.Tool
+import io.github.nomisrev.tools.asTool
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -14,6 +15,17 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
+fun GithubHttpClient(token: String? = null) = HttpClient {
+    install(ContentNegotiation) {
+        json(Json { ignoreUnknownKeys = true })
+    }
+    defaultRequest {
+        header(HttpHeaders.Authorization, "Bearer $token")
+        header(HttpHeaders.Accept, "application/vnd.github+json")
+        header("X-GitHub-Api-Version", "2022-11-28")
+    }
+}
+
 /**
  * Minimal GitHub client to fetch Pull Request text (title/body) and comments.
  *
@@ -21,28 +33,17 @@ import kotlinx.serialization.json.Json
  * GITHUB_TOKEN environment variable. When set, it increases rate limits and allows
  * private repo access if permitted by the token.
  */
-class GithubClient(
-    token: String? = null,
-    private val client: HttpClient = HttpClient {
-        install(ContentNegotiation) {
-            json(Json { ignoreUnknownKeys = true })
-        }
-        defaultRequest {
-            header(HttpHeaders.Authorization, "Bearer $token")
-            header(HttpHeaders.Accept, "application/vnd.github+json")
-            header("X-GitHub-Api-Version", "2022-11-28")
-        }
-    }
-) {
-    fun tools(): List<Tool<*, *>> = listOf(getPullRequest, getPullRequestComments)
+class GithubClient(private val client: HttpClient) {
+    fun tools(): List<Tool<*, *>> = listOf(
+        ::getPullRequest.asTool("Get pull request from github"),
+        ::getPullRequestComments.asTool("Get pull request comments from github")
+    )
 
-    val getPullRequest by Tool(
-        description = "Get pull request from github"
-    ) { input: GetPullRequestInput ->
+    suspend fun getPullRequest(input: GetPullRequestCommentsInput): PullRequestDetails {
         val pr: PullRequestResponse = client
             .get("https://api.github.com/repos/${input.owner}/${input.repo}/pulls/${input.number}")
             .body()
-        PullRequestDetails(
+        return PullRequestDetails(
             number = pr.number,
             title = pr.title,
             body = pr.body ?: "",
@@ -51,9 +52,7 @@ class GithubClient(
         )
     }
 
-    val getPullRequestComments by Tool(
-        description = "Get pull request comments from github"
-    ) { input: GetPullRequestCommentsInput ->
+    suspend fun getPullRequestComments(input: GetPullRequestCommentsInput): List<Comment> {
         val issueComments: List<IssueCommentResponse> = client
             .get("https://api.github.com/repos/${input.owner}/${input.owner}/issues/${input.number}/comments")
             .body()
@@ -80,7 +79,7 @@ class GithubClient(
                 type = CommentType.Review
             )
         }
-        (unifiedIssue + unifiedReview).sortedBy { it.createdAt }
+        return (unifiedIssue + unifiedReview).sortedBy { it.createdAt }
     }
 
     @Description("Get Pull Request Input")

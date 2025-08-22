@@ -13,6 +13,8 @@ import com.xemantic.ai.tool.schema.NumberSchema
 import com.xemantic.ai.tool.schema.ObjectSchema
 import com.xemantic.ai.tool.schema.StringSchema
 import com.xemantic.ai.tool.schema.generator.generateSchema
+import io.github.nomisrev.github.GithubClient.Comment
+import io.github.nomisrev.github.GithubClient.GetPullRequestCommentsInput
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.StringFormat
@@ -22,21 +24,16 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.serializer
 import kotlin.jvm.JvmInline
-import kotlin.properties.PropertyDelegateProvider
-import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KSuspendFunction1
 import ai.koog.agents.core.tools.Tool as KoogTool
 
-inline fun <reified A, reified B> Tool(
-    description: String,
-    noinline invoke: suspend (A) -> B
-): PropertyDelegateProvider<Any?, ReadOnlyProperty<Any?, Tool<A, B>>> = PropertyDelegateProvider { _, property ->
-    ReadOnlyProperty<Any?, Tool<A, B>> { _, _ ->
-        val snakeCased =
-            property.name
-                .replace(Regex("([a-z])([A-Z])")) { "${it.groupValues[1]}_${it.groupValues[2].lowercase()}" }
-                .lowercase()
-        Tool(snakeCased, description, serializer<A>(), serializer<B>(), invoke)
-    }
+inline fun <reified A, reified B> KSuspendFunction1<A, B>.asTool(
+    description: String
+): Tool<A, B> {
+    val snakeCased =
+        name.replace(Regex("([a-z])([A-Z])")) { "${it.groupValues[1]}_${it.groupValues[2].lowercase()}" }
+            .lowercase()
+    return Tool(snakeCased, description, serializer<A>(), serializer<B>(), this)
 }
 
 class Tool<A, B>(
