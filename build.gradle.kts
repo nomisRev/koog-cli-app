@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalMainFunctionArgume
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 group = "io.github.nomisrev"
@@ -43,11 +44,15 @@ kotlin {
         }
     }
 
-    listOf(macosX64(), linuxX64(), linuxArm64(), macosArm64(), mingwX64()).forEach { target ->
-        target.binaries {
-            executable {
-                entryPoint = "io.github.nomisrev.main"
-                baseName = "MainKt"
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation("com.github.ajalt.clikt:clikt:5.0.1")
+                implementation("ai.koog:koog-agents:0.3.0.5")
+                implementation("com.xemantic.ai:xemantic-ai-tool-schema:1.1.2")
+                implementation(ktorLibs.client.cio)
+                implementation(ktorLibs.serialization.kotlinx.json)
+                implementation(ktorLibs.client.contentNegotiation)
             }
         }
     }

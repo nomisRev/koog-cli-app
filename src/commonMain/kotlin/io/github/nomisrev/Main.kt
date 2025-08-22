@@ -1,5 +1,33 @@
 package io.github.nomisrev
 
-fun main(args: Array<String>) {
-    println("Hello KMP: ${args.joinToString()}")
+import ai.koog.agents.core.agent.AIAgent
+import ai.koog.prompt.executor.clients.openai.OpenAILLMClient
+import ai.koog.prompt.executor.clients.openai.OpenAIModels
+import ai.koog.prompt.executor.llms.SingleLLMPromptExecutor
+import com.github.ajalt.clikt.command.SuspendingCliktCommand
+import com.github.ajalt.clikt.command.main
+import com.github.ajalt.clikt.parameters.options.help
+import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.options.required
+import kotlinx.coroutines.Dispatchers
+
+suspend fun main(args: Array<String>) =
+    Hello().main(args)
+
+class Hello : SuspendingCliktCommand() {
+    val apiKey: String by option(envvar = "OPENAI_API_KEY").required().help("OpenAI API key")
+
+    override suspend fun run(): Unit = with(Dispatchers.Default) {
+        println("Hello Koog App: loading OpenAI:$apiKey")
+        val executor = SingleLLMPromptExecutor(OpenAILLMClient(apiKey))
+        val response = AIAgent(
+            executor,
+            OpenAIModels.Reasoning.GPT4oMini,
+            systemPrompt = """
+                You are a helpful assistant.
+            """.trimIndent(),
+            temperature = 0.9
+        ).run("Test")
+        println(response)
+    }
 }
