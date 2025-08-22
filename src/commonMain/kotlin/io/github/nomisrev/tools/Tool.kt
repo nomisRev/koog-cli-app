@@ -13,8 +13,6 @@ import com.xemantic.ai.tool.schema.NumberSchema
 import com.xemantic.ai.tool.schema.ObjectSchema
 import com.xemantic.ai.tool.schema.StringSchema
 import com.xemantic.ai.tool.schema.generator.generateSchema
-import io.github.nomisrev.github.GithubClient.Comment
-import io.github.nomisrev.github.GithubClient.GetPullRequestCommentsInput
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.StringFormat

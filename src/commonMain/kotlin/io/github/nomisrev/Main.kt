@@ -1,14 +1,11 @@
 package io.github.nomisrev
 
-import ai.koog.agents.core.agent.AIAgent
 import ai.koog.prompt.executor.clients.openai.OpenAILLMClient
-import ai.koog.prompt.executor.clients.openai.OpenAIModels
 import ai.koog.prompt.executor.llms.SingleLLMPromptExecutor
 import com.github.ajalt.clikt.command.SuspendingCliktCommand
 import com.github.ajalt.clikt.command.main
 import com.github.ajalt.clikt.parameters.options.help
 import com.github.ajalt.clikt.parameters.options.option
-import com.github.ajalt.clikt.parameters.options.optionalValue
 import com.github.ajalt.clikt.parameters.options.required
 import io.github.nomisrev.github.GithubClient
 import io.github.nomisrev.github.GithubHttpClient
@@ -25,22 +22,15 @@ class Hello : SuspendingCliktCommand() {
         println("Hello Koog App: loading OpenAI:$apiKey")
         val module = Module(apiKey, githubApiKey)
         module.github.getPullRequest(
-            GithubClient.GetPullRequestCommentsInput(
+            GithubClient.PullRequestInput(
                 "nomisRev",
                 "kotlinx-serialization-jsonpath",
                 75
             )
         ).also { println(it) }
 
-        val response = AIAgent(
-            module.executor,
-            OpenAIModels.Reasoning.GPT4oMini,
-            systemPrompt = """
-                You are a helpful assistant.
-            """.trimIndent(),
-            temperature = 0.9
-        ).run("Test")
-        println(response)
+//
+
     }
 }
 
