@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.2.20-RC2"
+kotlin = "2.2.20"
 clikt = "5.0.3"
 
 [libraries]
