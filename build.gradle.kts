@@ -48,7 +48,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation("com.github.ajalt.clikt:clikt:5.0.3")
-                implementation("ai.koog:koog-agents:0.4.3-develop-20250919-2303")
+                implementation("ai.koog:koog-agents:0.4.3-feat-101-01")
                 implementation("com.xemantic.ai:xemantic-ai-tool-schema:1.1.2")
                 implementation(ktorLibs.client.cio)
                 implementation(ktorLibs.serialization.kotlinx.json)
