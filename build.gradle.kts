@@ -49,7 +49,7 @@ kotlin {
             dependencies {
                 implementation("com.github.ajalt.clikt:clikt:5.0.3")
                 implementation("ai.koog:koog-agents:0.5.2-feat-01-02")
-                implementation("com.xemantic.ai:xemantic-ai-tool-schema:1.1.2")
+                implementation("com.xemantic.ai:xemantic-ai-tool-schema:1.2.0")
                 implementation(ktorLibs.client.cio)
                 implementation(ktorLibs.serialization.kotlinx.json)
                 implementation(ktorLibs.client.contentNegotiation)
