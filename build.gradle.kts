@@ -47,7 +47,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation("com.github.ajalt.clikt:clikt:5.0.3")
+                implementation("com.github.ajalt.clikt:clikt:5.1.0")
                 implementation("ai.koog:koog-agents:0.6.0-develop-20260103-0204")
                 implementation("com.xemantic.ai:xemantic-ai-tool-schema:1.2.0")
                 implementation(ktorLibs.client.cio)

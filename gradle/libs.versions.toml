@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.3.0"
-clikt = "5.0.3"
+clikt = "5.1.0"
 
 [libraries]
 clikt = { group = "com.github.ajalt.clikt", name = "clikt", version.ref = "clikt" }
